@@ -6,11 +6,31 @@ namespace RomanNumbers;
 
 public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible, IEquatable<RomanNumber>
 {
+    public const string One = "I";
+    public const string Five = "V";
+    public const string Ten = "X";
+    public const string Fifty = "L";
+    public const string OneHundred = "C";
+    public const string FiveHundred = "D";
+    public const string OneThousand = "M";
+    public const string UnicodeOne = "Ⅰ";
+    public const string UnicodeFive = "Ⅴ";
+    public const string UnicodeTen = "Ⅹ";
+    public const string UnicodeFifty = "Ⅼ";
+    public const string UnicodeOneHundred = "Ⅽ";
+    public const string UnicodeFiveHundred = "Ⅾ";
+    public const string UnicodeOneThousand = "Ⅿ";
+    public const string UnicodeOneThousandCD = "ↀ";
+    public const string UnicodeFiveThousand = "ↁ";
+    public const string UnicodeTenThousand = "ↂ";
+    public const string UnicodeFiftyThousand = "ↇ";
+    public const string UnicodeOneHundredThousand = "ↈ";
+
     #region Private constants
     private const int _minValue = 1;
     private const int _maxValue = 3999;
     #endregion
-    private static string[] _romanSymbols = { "I", "X", "C", "M" };
+    private static string[] _powerOfTenSymbols = { One, Ten, OneHundred, OneThousand };
     private int _number;
 
     /// <summary>
@@ -76,7 +96,7 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
         for (int i = number.Length() - 1; i >= 0; i--)
         {
             int digit = number % 10;
-            var rd = String.Join(String.Empty, Enumerable.Repeat(_romanSymbols[currentRomanDigit], digit));
+            var rd = String.Join(String.Empty, Enumerable.Repeat(_powerOfTenSymbols[currentRomanDigit], digit));
             sb.Insert(0, rd);
             currentRomanDigit++;
             number = number / 10;
@@ -102,9 +122,9 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
         int power = 1;
         string expand = Expand(romanNumber);
 
-        for (int i = 0; i < _romanSymbols.Length; i++)
+        for (int i = 0; i < _powerOfTenSymbols.Length; i++)
         {
-            string symbol = _romanSymbols[i];
+            string symbol = _powerOfTenSymbols[i];
             result += expand.DigitCount(symbol) * power;
             power *= 10;
         }
