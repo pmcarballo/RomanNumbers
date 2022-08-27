@@ -13,14 +13,30 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     private static string[] _romanSymbols = { "I", "X", "C", "M" };
     private int _number;
 
-
+    /// <summary>
+    /// Represents the smallest possible value of a Roman Number. This field is readonly.
+    /// </summary>
     public static readonly RomanNumber MinValue = new RomanNumber(_minValue);
 
+    /// <summary>
+    /// Represents the largest possible value of a Roman Number. This field is readonly.
+    /// </summary>
     public static readonly RomanNumber MaxValue = new RomanNumber(_maxValue);
+
+    /// <summary>
+    /// Gets the actual Int32 behind the Roman Number.
+    /// </summary>
     public int Number => _number;
 
+    /// <summary>
+    /// Gets the symbols for the current number.
+    /// </summary>
     public string RomanRepresentation => ToRomanNumber(_number);
 
+    /// <summary>
+    /// Creates an instance of a Roman Number for the specified integer.
+    /// </summary>
+    /// <param name="number">The number to be represented as Roman.</param>
     public RomanNumber(int number)
     {
         Validate(number);
@@ -37,10 +53,19 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
             > _maxValue) throw new ArgumentOutOfRangeException($"Numbers greater than {_maxValue} cannot be represented by Roman Numerals.");
     }
 
+    /// <summary>
+    /// Creates an instance of a Roman Number for the specified symbols.
+    /// </summary>
+    /// <param name="number">The roman symbols to be represented as Roman.</param>
     public RomanNumber(string number)
         : this(ToNumber(number))
     { }
 
+    /// <summary>
+    /// Converts an Int32 to Roman number.
+    /// </summary>
+    /// <param name="number">The integral number to convert to roman number.</param>
+    /// <returns>The roman representation for a number.</returns>
     public static string ToRomanNumber(int number)
     {
         Validate(number);
@@ -62,6 +87,13 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
         return compact;
     }
 
+    /// <summary>
+    /// Converts a string representation of a Roman number to an integral number.
+    /// </summary>
+    /// <param name="romanNumber">Roman symbols that represent an integral number.</param>
+    /// <returns>An integral number that corresponds to the Roman</returns>
+    /// <exception cref="FormatException">The input is not a valid Roman numeral.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The input results in an integral number that is out of the range of possible Roman representations.</exception>
     public static int ToNumber(string romanNumber)
     {
         if (!IsValid(romanNumber)) throw new FormatException("Input is not a valid Roman Numeral.");
@@ -109,6 +141,11 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
         return v;
     }
 
+    /// <summary>
+    /// Validates the input is represented as a standard Roman representation.
+    /// </summary>
+    /// <param name="romanNumber">The Roman representation to validate.</param>
+    /// <returns>True if the input is valid; otherwise False.</returns>
     public static bool IsValid(string romanNumber)
     {
         return Regex.IsMatch(romanNumber, "^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$");
