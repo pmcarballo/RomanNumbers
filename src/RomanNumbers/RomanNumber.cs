@@ -13,7 +13,7 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     private static string[] _romanSymbols = { "I", "X", "C", "M" };
     private int _number;
 
-    
+
     public static readonly RomanNumber MinValue = new RomanNumber(_minValue);
 
     public static readonly RomanNumber MaxValue = new RomanNumber(_maxValue);
@@ -114,16 +114,21 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
         return Regex.IsMatch(romanNumber, "^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$");
     }
 
+    #region IComparable members
     public int CompareTo(object? obj)
     {
         return Number.CompareTo(obj);
     }
+    #endregion
 
+    #region IComparable<RomanNumber> members
     public int CompareTo(RomanNumber other)
     {
         return this.CompareTo(other);
     }
+    #endregion
 
+    #region IConvertible members
     public TypeCode GetTypeCode() => TypeCode.Object;
 
     public bool ToBoolean(IFormatProvider? provider) => ((IConvertible)Number).ToBoolean(provider);
@@ -157,8 +162,11 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     public uint ToUInt32(IFormatProvider? provider) => ((IConvertible)Number).ToUInt32(provider);
 
     public ulong ToUInt64(IFormatProvider? provider) => ((IConvertible)Number).ToUInt64(provider);
+    #endregion
 
+    #region IEquatable<RomanNumber> members
     public bool Equals(RomanNumber other) => Number.Equals(other.Number);
+    #endregion
 
     // override object.Equals
     public override bool Equals(object? obj)
@@ -173,4 +181,7 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
 
     // override object.GetHashCode
     public override int GetHashCode() => Number.GetHashCode();
+
+    // override object.ToString
+    public override string ToString() => RomanRepresentation;
 }
