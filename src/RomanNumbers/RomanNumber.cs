@@ -109,6 +109,8 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
             power *= 10;
         }
 
+        Validate(result);
+
         return result;
     }
 
