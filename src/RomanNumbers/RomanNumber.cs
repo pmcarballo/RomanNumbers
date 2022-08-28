@@ -151,15 +151,14 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     private static string Expand(string v)
     {
         v = v.Replace("CM", "CCCCCCCCC");
-        v = v.Replace("D", "CCCCC");
         v = v.Replace("CD", "CCCC");
+        v = v.Replace("D", "CCCCC");
         v = v.Replace("XC", "XXXXXXXXX");
-        v = v.Replace("L", "XXXXX");
         v = v.Replace("XL", "XXXX");
+        v = v.Replace("L", "XXXXX");
         v = v.Replace("IX", "IIIIIIIII");
-        v = v.Replace("V", "IIIII");
         v = v.Replace("IV", "IIII");
-
+        v = v.Replace("V", "IIIII");
         return v;
     }
 
@@ -243,4 +242,33 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
 
     // override object.ToString
     public override string ToString() => RomanRepresentation;
+
+    #region Public operators
+
+    public static RomanNumber operator +(RomanNumber value1, RomanNumber value2)
+    {
+        return new RomanNumber(value1.Number + value2.Number);
+    }
+
+    public static RomanNumber operator -(RomanNumber value1, RomanNumber value2)
+    {
+        return new RomanNumber(value1.Number - value2.Number);
+    }
+
+    public static RomanNumber operator *(RomanNumber value1, RomanNumber value2)
+    {
+        return new RomanNumber(value1.Number * value2.Number);
+    }
+
+    public static RomanNumber operator /(RomanNumber value1, RomanNumber value2)
+    {
+        return new RomanNumber(value1.Number / value2.Number);
+    }
+
+    public static RomanNumber operator %(RomanNumber value1, RomanNumber value2)
+    {
+        return new RomanNumber(value1.Number % value2.Number);
+    }
+
+    #endregion
 }
