@@ -20,7 +20,7 @@ public class RomanNumberTests
         var rn = new RomanNumber(value);
 
         // Assert
-        Assert.Equal(expect, rn.RomanRepresentation);
+        Assert.Equal(expect, rn.CanonicalNumber);
     }
 
     [Theory]
@@ -116,7 +116,7 @@ public class RomanNumberTests
         var rn = new RomanNumber(1982);
 
         // Assert
-        Assert.Equal("MCMLXXXII", rn.RomanRepresentation);
+        Assert.Equal("MCMLXXXII", rn.CanonicalNumber);
     }
 
     [Theory]
@@ -148,7 +148,7 @@ public class RomanNumberTests
         var result = rn1 + rn2;
 
         // Assert
-        Assert.Equal(expect, result.RomanRepresentation);
+        Assert.Equal(expect, result.CanonicalNumber);
     }
 
     [Theory]
@@ -182,7 +182,7 @@ public class RomanNumberTests
         var result = rn1 - rn2;
 
         // Assert
-        Assert.Equal(expect, result.RomanRepresentation);
+        Assert.Equal(expect, result.CanonicalNumber);
     }
 
     [Theory]
@@ -214,7 +214,7 @@ public class RomanNumberTests
         var result = rn1 * rn2;
 
         // Assert
-        Assert.Equal(expect, result.RomanRepresentation);
+        Assert.Equal(expect, result.CanonicalNumber);
     }
 
     [Fact]
@@ -280,5 +280,37 @@ public class RomanNumberTests
 
         // Act && Assert
         Assert.Throws<ArgumentOutOfRangeException>(() => rn1 % rn2);
+    }
+
+    [Theory]
+    [InlineData(4, 4, true)]
+    [InlineData(9, 2, false)]
+    public void Test_Implicit_Equals(int value1, int value2, bool expect)
+    {
+        // Arrange
+        var rn1 = new RomanNumber(value1);
+        var rn2 = new RomanNumber(value2);
+
+        // Act
+        var result = rn1 == rn2;
+
+        // Assert
+        Assert.Equal(expect, result);
+    }
+
+    [Theory]
+    [InlineData(4, 4, false)]
+    [InlineData(9, 2, true)]
+    public void Test_Implicit_NotEquals(int value1, int value2, bool expect)
+    {
+        // Arrange
+        var rn1 = new RomanNumber(value1);
+        var rn2 = new RomanNumber(value2);
+
+        // Act
+        var result = rn1 != rn2;
+
+        // Assert
+        Assert.Equal(expect, result);
     }
 }

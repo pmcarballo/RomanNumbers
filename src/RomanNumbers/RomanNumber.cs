@@ -1,10 +1,12 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using RomanNumbers.Extensions;
 
 namespace RomanNumbers;
 
-public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible, IEquatable<RomanNumber>
+[DebuggerDisplay($"{{{nameof(DebuggerDisplay)}(),nq}}")]
+public readonly partial struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible, IEquatable<RomanNumber>
 {
     public const string One = "I";
     public const string Five = "V";
@@ -30,28 +32,27 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     private const int _minValue = 1;
     private const int _maxValue = 3999;
     #endregion
-    private static string[] _powerOfTenSymbols = { One, Ten, OneHundred, OneThousand };
-    private int _number;
+    private static readonly string[] _powerOfTenSymbols = [One, Ten, OneHundred, OneThousand];
 
     /// <summary>
     /// Represents the smallest possible value of a Roman Number. This field is readonly.
     /// </summary>
-    public static readonly RomanNumber MinValue = new RomanNumber(_minValue);
+    public static readonly RomanNumber MinValue = new(_minValue);
 
     /// <summary>
     /// Represents the largest possible value of a Roman Number. This field is readonly.
     /// </summary>
-    public static readonly RomanNumber MaxValue = new RomanNumber(_maxValue);
+    public static readonly RomanNumber MaxValue = new(_maxValue);
 
     /// <summary>
     /// Gets the actual Int32 behind the Roman Number.
     /// </summary>
-    public int Number => _number;
+    public readonly int Number { get; }
 
     /// <summary>
     /// Gets the symbols for the current number.
     /// </summary>
-    public string RomanRepresentation => ToRomanNumber(_number);
+    public readonly string CanonicalNumber => ToRomanNumber(Number);
 
     /// <summary>
     /// Creates an instance of a Roman Number for the specified integer.
@@ -59,18 +60,20 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     /// <param name="number">The number to be represented as Roman.</param>
     public RomanNumber(int number)
     {
-        Validate(number);
+        ValidateRange(number);
 
-        _number = number;
+        Number = number;
     }
 
-    private static void Validate(int number)
+    private static void ValidateRange(int number)
     {
-        if (number
-            < _minValue) throw new ArgumentOutOfRangeException($"Numbers lower than {_minValue} cannot be represented by Roman Numerals.");
-
-        if (number
-            > _maxValue) throw new ArgumentOutOfRangeException($"Numbers greater than {_maxValue} cannot be represented by Roman Numerals.");
+        switch (number)
+        {
+            case < _minValue:
+                throw new ArgumentOutOfRangeException(nameof(number), number, $"Numbers lower than {_minValue} cannot be represented by Roman Numerals.");
+            case > _maxValue:
+                throw new ArgumentOutOfRangeException($"Numbers greater than {_maxValue} cannot be represented by Roman Numerals.");
+        }
     }
 
     /// <summary>
@@ -88,7 +91,7 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     /// <returns>The roman representation for a number.</returns>
     public static string ToRomanNumber(int number)
     {
-        Validate(number);
+        ValidateRange(number);
 
         var sb = new StringBuilder();
         int currentRomanDigit = 0;
@@ -96,10 +99,10 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
         for (int i = number.Length() - 1; i >= 0; i--)
         {
             int digit = number % 10;
-            var rd = String.Join(String.Empty, Enumerable.Repeat(_powerOfTenSymbols[currentRomanDigit], digit));
+            var rd = string.Join(string.Empty, Enumerable.Repeat(_powerOfTenSymbols[currentRomanDigit], digit));
             sb.Insert(0, rd);
             currentRomanDigit++;
-            number = number / 10;
+            number /= 10;
         }
 
         string compact = Compact(sb.ToString());
@@ -129,7 +132,7 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
             power *= 10;
         }
 
-        Validate(result);
+        ValidateRange(result);
 
         return result;
     }
@@ -167,108 +170,102 @@ public struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible,
     /// </summary>
     /// <param name="romanNumber">The Roman representation to validate.</param>
     /// <returns>True if the input is valid; otherwise False.</returns>
-    public static bool IsValid(string romanNumber)
-    {
-        return Regex.IsMatch(romanNumber, "^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$");
-    }
+    public static bool IsValid(string romanNumber) => MyRegex().IsMatch(romanNumber);
 
     #region IComparable members
-    public int CompareTo(object? obj)
-    {
-        return Number.CompareTo(obj);
-    }
+    public int CompareTo(object? obj) => Number.CompareTo(obj);
     #endregion
 
     #region IComparable<RomanNumber> members
-    public int CompareTo(RomanNumber other)
-    {
-        return this.CompareTo(other);
-    }
+    public readonly int CompareTo(RomanNumber other) => CompareTo(other);
     #endregion
 
     #region IConvertible members
-    public TypeCode GetTypeCode() => TypeCode.Object;
+    public readonly TypeCode GetTypeCode() => TypeCode.Object;
 
-    public bool ToBoolean(IFormatProvider? provider) => ((IConvertible)Number).ToBoolean(provider);
+    public readonly bool ToBoolean(IFormatProvider? provider) => ((IConvertible)Number).ToBoolean(provider);
 
-    public byte ToByte(IFormatProvider? provider) => ((IConvertible)Number).ToByte(provider);
+    public readonly byte ToByte(IFormatProvider? provider) => ((IConvertible)Number).ToByte(provider);
 
-    public char ToChar(IFormatProvider? provider) => ((IConvertible)Number).ToChar(provider);
+    public readonly char ToChar(IFormatProvider? provider) => ((IConvertible)Number).ToChar(provider);
 
-    public DateTime ToDateTime(IFormatProvider? provider) => ((IConvertible)Number).ToDateTime(provider);
+    public readonly DateTime ToDateTime(IFormatProvider? provider) => ((IConvertible)Number).ToDateTime(provider);
 
-    public decimal ToDecimal(IFormatProvider? provider) => ((IConvertible)Number).ToDecimal(provider);
+    public readonly decimal ToDecimal(IFormatProvider? provider) => ((IConvertible)Number).ToDecimal(provider);
 
-    public double ToDouble(IFormatProvider? provider) => ((IConvertible)Number).ToDouble(provider);
+    public readonly double ToDouble(IFormatProvider? provider) => ((IConvertible)Number).ToDouble(provider);
 
-    public short ToInt16(IFormatProvider? provider) => ((IConvertible)Number).ToInt16(provider);
+    public readonly short ToInt16(IFormatProvider? provider) => ((IConvertible)Number).ToInt16(provider);
 
-    public int ToInt32(IFormatProvider? provider) => ((IConvertible)Number).ToInt32(provider);
+    public readonly int ToInt32(IFormatProvider? provider) => ((IConvertible)Number).ToInt32(provider);
 
-    public long ToInt64(IFormatProvider? provider) => ((IConvertible)Number).ToInt64(provider);
+    public readonly long ToInt64(IFormatProvider? provider) => ((IConvertible)Number).ToInt64(provider);
 
-    public sbyte ToSByte(IFormatProvider? provider) => ((IConvertible)Number).ToSByte(provider);
+    public readonly sbyte ToSByte(IFormatProvider? provider) => ((IConvertible)Number).ToSByte(provider);
 
-    public float ToSingle(IFormatProvider? provider) => ((IConvertible)Number).ToSingle(provider);
+    public readonly float ToSingle(IFormatProvider? provider) => ((IConvertible)Number).ToSingle(provider);
 
-    public string ToString(IFormatProvider? provider) => Number.ToString(provider);
+    public readonly string ToString(IFormatProvider? provider) => Number.ToString(provider);
 
-    public object ToType(Type conversionType, IFormatProvider? provider) => ((IConvertible)Number).ToType(conversionType, provider);
+    public readonly object ToType(Type conversionType, IFormatProvider? provider) => ((IConvertible)Number).ToType(conversionType, provider);
 
-    public ushort ToUInt16(IFormatProvider? provider) => ((IConvertible)Number).ToUInt16(provider);
+    public readonly ushort ToUInt16(IFormatProvider? provider) => ((IConvertible)Number).ToUInt16(provider);
 
-    public uint ToUInt32(IFormatProvider? provider) => ((IConvertible)Number).ToUInt32(provider);
+    public readonly uint ToUInt32(IFormatProvider? provider) => ((IConvertible)Number).ToUInt32(provider);
 
-    public ulong ToUInt64(IFormatProvider? provider) => ((IConvertible)Number).ToUInt64(provider);
+    public readonly ulong ToUInt64(IFormatProvider? provider) => ((IConvertible)Number).ToUInt64(provider);
     #endregion
 
     #region IEquatable<RomanNumber> members
-    public bool Equals(RomanNumber other) => Number.Equals(other.Number);
+    public readonly bool Equals(RomanNumber other) => Number.Equals(other.Number);
     #endregion
 
     // override object.Equals
-    public override bool Equals(object? obj)
+    public override readonly bool Equals(object? obj)
     {
-        if (obj == null || GetType() != obj.GetType())
+        if (obj == null
+            || GetType() != obj.GetType())
         {
             return false;
         }
 
-        return this.Equals((RomanNumber)obj);
+        return Equals((RomanNumber)obj);
     }
 
     // override object.GetHashCode
-    public override int GetHashCode() => Number.GetHashCode();
+    public override readonly int GetHashCode() => Number.GetHashCode();
 
     // override object.ToString
-    public override string ToString() => RomanRepresentation;
+    public override readonly string ToString() => CanonicalNumber;
 
     #region Public operators
 
-    public static RomanNumber operator +(RomanNumber value1, RomanNumber value2)
-    {
-        return new RomanNumber(value1.Number + value2.Number);
-    }
+    public static RomanNumber operator +(RomanNumber value1, RomanNumber value2) => new(value1.Number + value2.Number);
 
-    public static RomanNumber operator -(RomanNumber value1, RomanNumber value2)
-    {
-        return new RomanNumber(value1.Number - value2.Number);
-    }
+    public static RomanNumber operator -(RomanNumber value1, RomanNumber value2) => new(value1.Number - value2.Number);
 
-    public static RomanNumber operator *(RomanNumber value1, RomanNumber value2)
-    {
-        return new RomanNumber(value1.Number * value2.Number);
-    }
+    public static RomanNumber operator *(RomanNumber value1, RomanNumber value2) => new(value1.Number * value2.Number);
 
-    public static RomanNumber operator /(RomanNumber value1, RomanNumber value2)
-    {
-        return new RomanNumber(value1.Number / value2.Number);
-    }
+    public static RomanNumber operator /(RomanNumber value1, RomanNumber value2) => new(value1.Number / value2.Number);
 
-    public static RomanNumber operator %(RomanNumber value1, RomanNumber value2)
-    {
-        return new RomanNumber(value1.Number % value2.Number);
-    }
+    public static RomanNumber operator %(RomanNumber value1, RomanNumber value2) => new(value1.Number % value2.Number);
+
+    [GeneratedRegex("^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$")]
+    private static partial Regex MyRegex();
+
+    private readonly string DebuggerDisplay => ToString();
+
+    public static bool operator ==(RomanNumber left, RomanNumber right) => left.Equals(right);
+
+    public static bool operator !=(RomanNumber left, RomanNumber right) => !(left == right);
+
+    public static bool operator <(RomanNumber left, RomanNumber right) => left.CompareTo(right) < 0;
+
+    public static bool operator <=(RomanNumber left, RomanNumber right) => left.CompareTo(right) <= 0;
+
+    public static bool operator >(RomanNumber left, RomanNumber right) => left.CompareTo(right) > 0;
+
+    public static bool operator >=(RomanNumber left, RomanNumber right) => left.CompareTo(right) >= 0;
 
     #endregion
 }
