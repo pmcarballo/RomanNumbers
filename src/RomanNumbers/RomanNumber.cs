@@ -8,6 +8,7 @@ namespace RomanNumbers;
 [DebuggerDisplay($"{{{nameof(DebuggerDisplay)}(),nq}}")]
 public readonly partial struct RomanNumber : IComparable, IComparable<RomanNumber>, IConvertible, IEquatable<RomanNumber>
 {
+    #region Symbols
     public const string One = "I";
     public const string Five = "V";
     public const string Ten = "X";
@@ -15,24 +16,30 @@ public readonly partial struct RomanNumber : IComparable, IComparable<RomanNumbe
     public const string OneHundred = "C";
     public const string FiveHundred = "D";
     public const string OneThousand = "M";
-    public const string UnicodeOne = "Ⅰ";
-    public const string UnicodeFive = "Ⅴ";
-    public const string UnicodeTen = "Ⅹ";
-    public const string UnicodeFifty = "Ⅼ";
-    public const string UnicodeOneHundred = "Ⅽ";
-    public const string UnicodeFiveHundred = "Ⅾ";
-    public const string UnicodeOneThousand = "Ⅿ";
-    public const string UnicodeOneThousandCD = "ↀ";
-    public const string UnicodeFiveThousand = "ↁ";
-    public const string UnicodeTenThousand = "ↂ";
-    public const string UnicodeFiftyThousand = "ↇ";
-    public const string UnicodeOneHundredThousand = "ↈ";
+    public const string UOne = "Ⅰ";
+    public const string UFive = "Ⅴ";
+    public const string UTen = "Ⅹ";
+    public const string UFifty = "Ⅼ";
+    public const string UOneHundred = "Ⅽ";
+    public const string UFiveHundred = "Ⅾ";
+    public const string UOneThousand = "Ⅿ";
+    public const string UOneThousandCD = "ↀ";
+    public const string UFiveThousand = "ↁ";
+    public const string UTenThousand = "ↂ";
+    public const string UFiftyThousand = "ↇ";
+    public const string UOneHundredThousand = "ↈ";
+
+    #endregion
 
     #region Private constants
+
     private const int _minValue = 1;
     private const int _maxValue = 3999;
+
     #endregion
+    
     private static readonly string[] _powerOfTenSymbols = [One, Ten, OneHundred, OneThousand];
+    private static readonly string[] _powerOfTenUSymbols = [UOne, UTen, UOneHundred, UOneThousand];
 
     /// <summary>
     /// Represents the smallest possible value of a Roman Number. This field is readonly.
@@ -99,8 +106,8 @@ public readonly partial struct RomanNumber : IComparable, IComparable<RomanNumbe
         for (int i = number.Length() - 1; i >= 0; i--)
         {
             int digit = number % 10;
-            var rd = string.Join(string.Empty, Enumerable.Repeat(_powerOfTenSymbols[currentRomanDigit], digit));
-            sb.Insert(0, rd);
+            var symbol = string.Join(string.Empty, Enumerable.Repeat(_powerOfTenSymbols[currentRomanDigit], digit));
+            sb.Insert(0, symbol);
             currentRomanDigit++;
             number /= 10;
         }

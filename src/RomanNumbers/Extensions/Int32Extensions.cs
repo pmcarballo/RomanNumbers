@@ -13,7 +13,7 @@ public static class Int32Extensions
 
         while (number > 0)
         {
-            number = number / 10;
+            number /= 10;
             count++;
         }
 
